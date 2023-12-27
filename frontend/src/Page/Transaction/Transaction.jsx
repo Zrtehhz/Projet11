@@ -10,6 +10,7 @@ import { logout } from '../../redux/reducers/authSlice';
 function Transaction() {
     const { transactionId } = useParams();
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const profileData = useSelector((state) => state.auth.user);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -49,7 +50,7 @@ function Transaction() {
 
     return (
         <div>
-            <Header onSignOut={handleSignOut} />
+            <Header onSignOut={handleSignOut} userName={profileData.userName}/>
             {selectedTransaction && <TransactionDetails transaction={selectedTransaction} />}
             <Footer />
         </div>

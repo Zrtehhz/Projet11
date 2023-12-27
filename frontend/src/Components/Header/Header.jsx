@@ -6,6 +6,7 @@ import logo from "../../Assets/Images/argentBankLogo.png";
 import '../../Styles/Components/Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useEffect } from 'react';
 
 export default function Header({ userName, userId }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -32,6 +33,15 @@ export default function Header({ userName, userId }) {
     dispatch(logout());
     navigate('/login');
   };
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   return (
     <header>
