@@ -16,6 +16,13 @@ function ProfilePage() {
   const { userId } = useParams();
 
   useEffect(() => {
+    if (userId) {
+      setProfileData(prevState => ({ ...prevState, id: userId }));
+
+    }
+  }, [userId]);
+
+  useEffect(() => {
     if (!token) {
       dispatch(logout());
       navigate('/login');
@@ -33,7 +40,8 @@ function ProfilePage() {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
+        },        
+
       });
   
       if (!response.ok) {
@@ -48,6 +56,8 @@ function ProfilePage() {
           userName: data.body.userName
         });
       }
+      navigate(`/profile/${data.body.id}`);
+
     } catch (error) {
       console.error('Error:', error);
       localStorage.removeItem('token');
@@ -89,7 +99,7 @@ function ProfilePage() {
   amount="$184.30"
   description="Current Balance"
 />
-
+            
       </main>
     </>
   );

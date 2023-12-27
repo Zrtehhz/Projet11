@@ -55,6 +55,7 @@ function Dropdown({ detail }) {
     }, [detail]);
 
     return (
+        
         <div className="dropdown-container">
             <div className="dropdown-toggle" onClick={() => setIsOpen(!isOpen)}>
                 <p className="dateT">{detail.date}</p>
@@ -63,6 +64,7 @@ function Dropdown({ detail }) {
                 <p className="balanceT">{detail.balance}</p>
                 <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={`chevron-icon ${isOpen ? "rotate" : ""}`} />
             </div>
+            
             {isOpen && (
                 <div className="dropdown-content">
                     <p>

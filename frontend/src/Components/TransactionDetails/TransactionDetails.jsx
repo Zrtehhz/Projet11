@@ -26,7 +26,8 @@ function TransactionDetails({ transaction }) {
         <p className="transaction-description">{transaction.description}</p>
       </div>
 
-      <div>
+      <div>  
+        <div className="spanClass"><span>Date</span><span>Description</span><span>Amount</span><span>Balance</span></div>
         {additionalDetails.map((detail, index) => (
           <Dropdown key={index} detail={detail} />
         ))}
