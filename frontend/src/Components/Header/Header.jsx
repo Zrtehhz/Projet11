@@ -1,36 +1,56 @@
 import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { setAuthenticated } from '../../redux/reducers/authSlice'; // Assurez-vous que le chemin d'importation est correct
+import { logout } from '../../redux/reducers/authSlice';
 import logo from "../../Assets/Images/argentBankLogo.png";
 import '../../Styles/Components/Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
-function Header() {
+export default function Header({ userName, userId }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { user: { rememberMe } } = useSelector((state) => state.auth);
+
+  const profileData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const handleLogoClick = () => {
+    const token = localStorage.getItem('token');
+
+    if (token && rememberMe) {
+      navigate('/profile');
+    } else if (!token) {
+      localStorage.removeItem('token');
+      dispatch(logout());
+      navigate('/');
+    }
+  };
+
   const handleSignOut = () => {
     localStorage.removeItem('token');
-    dispatch(setAuthenticated(false)); // Déconnexion de l'utilisateur
+    dispatch(logout());
     navigate('/login');
   };
 
   return (
     <header>
       <nav className="main-nav">
-        <Link className="main-nav-logo" to="/">
+        <Link className="main-nav-logo" to="/" onClick={handleLogoClick}>
           <img className="main-nav-logo-image" src={logo} alt="Argent Bank Logo" />
         </Link>
+  
         <div>
           {isAuthenticated ? (
             <>
               <FontAwesomeIcon icon={faUser} />
-              <Link className='main-nav-item' to={`/profile/${userId}`}>
-                {userName}
-              </Link>
+              {userName ? ( 
+                <Link className='main-nav-item' to={`/profile/${userId}`}>
+                  {userName}
+                </Link>
+              ) : (
+                <span className='main-nav-item'></span>
+              )}
               <Link className="main-nav-item" to="/" onClick={handleSignOut}>
                 <FontAwesomeIcon icon={faRightFromBracket} />
                 Sign Out
@@ -46,5 +66,3 @@ function Header() {
     </header>
   );
 }
-
-export default Header;

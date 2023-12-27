@@ -27,7 +27,7 @@ function LoginPage() {
       });
 
       const data = await response.json();
-            if (response.ok) {
+      if (response.ok) {
         const token = data.body.token;
         const userData = { id: data.body.id, email: data.body.email, firstName: data.body.firstName };
         dispatch(setCredentials({ user: userData, token: token }));
@@ -51,7 +51,7 @@ function LoginPage() {
         <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
-            <label htmlFor="email">Username</label>
+            <label htmlFor="email">Email</label>
             <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} />
           </div>
           <div className="input-wrapper">

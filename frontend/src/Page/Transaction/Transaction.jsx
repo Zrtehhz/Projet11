@@ -1,16 +1,16 @@
-// Transaction.jsx
 import React, { useState, useEffect } from 'react';
 import Header from '../../Components/Header/Header';
 import Footer from '../../Components/Footer/Footer';
 import TransactionDetails from '../../Components/TransactionDetails/TransactionDetails';
 import '../../Styles/Components/Body.css';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { checkAuthentication } from '../../redux/reducers/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../redux/reducers/authSlice';
 
 function Transaction() {
     const { transactionId } = useParams();
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -21,21 +21,35 @@ function Transaction() {
     ];
 
     useEffect(() => {
-        dispatch(checkAuthentication());
-
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
+        const newTransactionId = parseInt(transactionId);
+        if (selectedTransaction && selectedTransaction.id === newTransactionId) {
+            return;
         }
 
-        const newTransactionId = parseInt(transactionId);
         const transaction = transactions.find(t => t.id === newTransactionId);
         setSelectedTransaction(transaction);
-    }, [transactionId, transactions, dispatch, navigate]);
+    }, [transactionId, selectedTransaction, transactions]);
+
+    const handleSignOut = () => {
+        localStorage.removeItem('token');
+        dispatch(logout());
+        navigate('/login');
+    };
+
+    useEffect(() => {
+        // Vérifiez si un token est présent au moment de l'initialisation du composant
+        const token = localStorage.getItem('token');
+        const isTokenPresent = !!token;
+
+        // Si l'utilisateur n'est pas authentifié et aucun token n'est présent, déconnectez-le et redirigez-le vers la page de connexion
+        if (!isTokenPresent) {
+            handleSignOut();
+        }
+    }, [dispatch, navigate]);
 
     return (
         <div>
-            <Header />
+            <Header onSignOut={handleSignOut} />
             {selectedTransaction && <TransactionDetails transaction={selectedTransaction} />}
             <Footer />
         </div>
