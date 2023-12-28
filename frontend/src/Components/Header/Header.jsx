@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../redux/reducers/authSlice';
+import { logout, setCredentials } from '../../redux/reducers/authSlice';
 import logo from "../../Assets/Images/argentBankLogo.png";
 import '../../Styles/Components/Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,34 +9,35 @@ import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 export default function Header({ userName, userId }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const { user: { rememberMe } } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleLogoClick = () => {
+  useEffect(() => {
     const localStorageToken = localStorage.getItem('token');
     const sessionStorageToken = sessionStorage.getItem('sessionToken');
 
-    if ((localStorageToken && rememberMe) || sessionStorageToken) {
-      navigate('/profile');
-    } else {
-      clearTokens();
+    // Si un token est trouvé dans localStorage, rester connecté
+    if (localStorageToken) {
+      dispatch(setCredentials({ user: {}, token: localStorageToken, rememberMe: true }));
+    } 
+    // Si un token est trouvé dans sessionStorage mais pas dans localStorage, déconnecter
+    else if (sessionStorageToken) {
+      navigate('/login');
       dispatch(logout());
-      navigate('/');
+    }
+  }, [dispatch, navigate]);
+
+  const handleLogoClick = () => {
+    if (userId) {
+      navigate(`/profile/${userId}`);
     }
   };
 
-  const handleSignOut = () => {
+const handleSignOut = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('sessionToken');
     dispatch(logout());
     navigate('/login');
-  };
-  
-  const clearTokens = () => {
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('sessionToken');
   };
 
   return (

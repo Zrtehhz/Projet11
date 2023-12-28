@@ -32,15 +32,15 @@ function LoginPage() {
         const userData = { id: data.body.id, email: data.body.email, firstName: data.body.firstName };
         dispatch(setCredentials({ user: userData, token, rememberMe }));
 
-        // Stockez toujours le token dans sessionStorage
-/*         sessionStorage.setItem('sessionToken', token);
- */
-        // Si "Remember me" est coché, stockez également dans localStorage et supprimez de sessionStorage
         if (rememberMe) {
           localStorage.setItem('token', token);
-          sessionStorage.removeItem('sessionToken'); // Supprimez le token de session
+          sessionStorage.removeItem('sessionToken'); // Supprimer le token de sessionStorage si "Remember Me" est coché
         } else {
           sessionStorage.setItem('sessionToken', token);
+          // Définir un timer pour la déconnexion automatique après 30 minutes
+          setTimeout(() => {
+            sessionStorage.removeItem('sessionToken');
+          }, 1800000); // 30 minutes en millisecondes
         }
 
         navigate(`/profile/${data.body.id}`);

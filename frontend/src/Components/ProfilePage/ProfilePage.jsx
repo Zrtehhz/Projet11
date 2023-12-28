@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import { logout, checkRememberMe } from '../../redux/reducers/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../../redux/reducers/authSlice';
 import EditButton from '../EditButton/EditButton';
 import Account from '../Account/Account';
 import Header from '../../Components/Header/Header';
@@ -11,54 +11,20 @@ function ProfilePage() {
   const navigate = useNavigate();
   const reduxToken = useSelector(state => state.auth.token);
 
-  // Déterminer si l'utilisateur a choisi l'option "Remember me"
-  const isRemembered = localStorage.getItem('isRemembered') === 'true';
-
-  // Récupérer le token approprié selon l'option "Remember me"
-  const token = reduxToken || (isRemembered ? localStorage.getItem('token') : sessionStorage.getItem('sessionToken'));
-
   const [profileData, setProfileData] = useState({ id: '', email: '', userName: '' });
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { userId } = useParams();
 
   useEffect(() => {
-    if (userId) {
-      setProfileData(prevState => ({ ...prevState, id: userId }));
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    if (!token) {
-      dispatch(logout());
-      navigate('/login');
+    const localStorageToken = localStorage.getItem('token');
+    const sessionStorageToken = sessionStorage.getItem('sessionToken');
+    
+    if (localStorageToken || sessionStorageToken) {
+      fetchData(localStorageToken || sessionStorageToken);
     } else {
-      dispatch(checkRememberMe());
-      fetchData();
+      navigate('/login');
     }
+  }, [dispatch, navigate]);
 
-    const sessionTimeout = 5 * 60 * 1000; // 5 minutes
-    let timeoutId;
-
-    const resetSessionTimeout = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        clearTokens();
-        dispatch(logout());
-        navigate('/login');
-      }, sessionTimeout);
-    };
-
-    window.addEventListener('mousemove', resetSessionTimeout);
-    window.addEventListener('keydown', resetSessionTimeout);
-
-    return () => {
-      window.removeEventListener('mousemove', resetSessionTimeout);
-      window.removeEventListener('keydown', resetSessionTimeout);
-    };
-  }, [token, dispatch, navigate]);
-
-  const fetchData = async () => {
+  const fetchData = async (token) => {
     try {
       const response = await fetch(`http://localhost:3001/api/v1/user/profile`, {
         method: 'POST',
@@ -69,7 +35,7 @@ function ProfilePage() {
       });
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`);
+        throw new Error(`Erreur: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -79,42 +45,37 @@ function ProfilePage() {
           email: data.body.email,
           userName: data.body.userName
         });
-        navigate(`/profile/${data.body.id}`);
-
+        navigate(`/profile/${data.body.id}`); // Redirige après la connexion réussie
       } else {
-        console.log('Error with status:', data.status);
-        clearTokens();
-        dispatch(logout());
-        navigate('/login');
+        throw new Error(`Erreur avec le statut: ${data.status}`);
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Erreur:', error);
       clearTokens();
       dispatch(logout());
       navigate('/login');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const clearTokens = () => {
     localStorage.removeItem('token');
     sessionStorage.removeItem('sessionToken');
-    localStorage.removeItem('isRemembered'); 
   };
 
   return (
     <>
-      <Header userName={profileData.userName} /> 
+      <Header userName={profileData.userName} userId={profileData.id} />
       <main className="main bg-dark">
-        <div className="header">
+        {profileData.id ? (
+          <div className="header">
             <h1>Welcome back<br />{profileData.userName || profileData.id}!</h1>
-          <EditButton onProfileUpdate={setProfileData} />
-        </div>
-        <h2 className="sr-only">Accounts</h2>
-        <Account id="1" title="Argent Bank Checking (x8349)" amount="$2,082.79" description="Available Balance" />
-        <Account id="2" title="Argent Bank Savings (x6712)" amount="$10,928.42" description="Available Balance" />
-        <Account id="3" title="Argent Bank Credit Card (x8349)" amount="$184.30" description="Current Balance" />
+            <EditButton onProfileUpdate={setProfileData} />
+          </div>
+        ) : null}
+        <h2 className="sr-only">Comptes</h2>
+        <Account id="1" title="Argent Bank Checking (x8349)" amount="$2,082.79" description="Solde Disponible" />
+        <Account id="2" title="Argent Bank Savings (x6712)" amount="$10,928.42" description="Solde Disponible" />
+        <Account id="3" title="Argent Bank Credit Card (x8349)" amount="$184.30" description="Solde Actuel" />
       </main>
     </>
   );
