@@ -33,17 +33,17 @@ function Transaction() {
 
     const handleSignOut = () => {
         localStorage.removeItem('token');
+        sessionStorage.removeItem('sessionToken');
+        
         dispatch(logout());
         navigate('/login');
     };
 
     useEffect(() => {
-        // Vérifiez si un token est présent au moment de l'initialisation du composant
-        const token = localStorage.getItem('token');
-        const isTokenPresent = !!token;
+        const localStorageToken = localStorage.getItem('token');
+        const sessionStorageToken = sessionStorage.getItem('sessionToken');
 
-        // Si l'utilisateur n'est pas authentifié et aucun token n'est présent, déconnectez-le et redirigez-le vers la page de connexion
-        if (!isTokenPresent) {
+        if (!localStorageToken && !sessionStorageToken) {
             handleSignOut();
         }
     }, [dispatch, navigate]);

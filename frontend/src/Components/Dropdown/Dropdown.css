@@ -29,19 +29,31 @@
     margin: 0;
     padding: 5px;
   }
+  @keyframes chevronDown {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(-180deg); }
+  }
+  
+  @keyframes chevronUp {
+    0% { transform: rotate(-180deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(0deg); }
+  }
   
   .chevron-icon {
     margin-left: auto; 
-    transition: transform 0.2s;
-    transform: rotate(0deg); 
-
+    transform: rotate(0deg);
   }
   
-  .rotate {
-    transform: rotate(180deg); 
-    transition: transform 0.2s;
-
+  .rotate-down {
+    animation: chevronDown 0.2s forwards;
   }
+  
+  .rotate-up {
+    animation: chevronUp 0.2s forwards;
+  }
+  
   
   .dropdown-content {
     margin-top: 10px;

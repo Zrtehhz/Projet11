@@ -6,23 +6,22 @@ import logo from "../../Assets/Images/argentBankLogo.png";
 import '../../Styles/Components/Header.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { useEffect } from 'react';
 
 export default function Header({ userName, userId }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const { user: { rememberMe } } = useSelector((state) => state.auth);
 
-  const profileData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
-    const token = localStorage.getItem('token');
+    const localStorageToken = localStorage.getItem('token');
+    const sessionStorageToken = sessionStorage.getItem('sessionToken');
 
-    if (token && rememberMe) {
+    if ((localStorageToken && rememberMe) || sessionStorageToken) {
       navigate('/profile');
-    } else if (!token) {
-      localStorage.removeItem('token');
+    } else {
+      clearTokens();
       dispatch(logout());
       navigate('/');
     }
@@ -30,18 +29,15 @@ export default function Header({ userName, userId }) {
 
   const handleSignOut = () => {
     localStorage.removeItem('token');
+    sessionStorage.removeItem('sessionToken');
     dispatch(logout());
     navigate('/login');
   };
-
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
+  
+  const clearTokens = () => {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('sessionToken');
+  };
 
   return (
     <header>
@@ -54,7 +50,7 @@ export default function Header({ userName, userId }) {
           {isAuthenticated ? (
             <>
               <FontAwesomeIcon icon={faUser} />
-              {userName ? ( 
+              {userName ? (
                 <Link className='main-nav-item' to={`/profile/${userId}`}>
                   {userName}
                 </Link>
