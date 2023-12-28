@@ -30,15 +30,17 @@ function LoginPage() {
       if (response.ok) {
         const token = data.body.token;
         const userData = { id: data.body.id, email: data.body.email, firstName: data.body.firstName };
-        dispatch(setCredentials({ user: userData, token: token, rememberMe: rememberMe }));
+        dispatch(setCredentials({ user: userData, token, rememberMe }));
 
         // Stockez toujours le token dans sessionStorage
-        sessionStorage.setItem('sessionToken', token);
-
+/*         sessionStorage.setItem('sessionToken', token);
+ */
         // Si "Remember me" est coché, stockez également dans localStorage et supprimez de sessionStorage
         if (rememberMe) {
           localStorage.setItem('token', token);
           sessionStorage.removeItem('sessionToken'); // Supprimez le token de session
+        } else {
+          sessionStorage.setItem('sessionToken', token);
         }
 
         navigate(`/profile/${data.body.id}`);

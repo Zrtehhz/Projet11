@@ -37,7 +37,7 @@ function ProfilePage() {
       fetchData();
     }
 
-    const sessionTimeout = 1 * 60 * 1000; // 5 minutes
+    const sessionTimeout = 5 * 60 * 1000; // 5 minutes
     let timeoutId;
 
     const resetSessionTimeout = () => {
