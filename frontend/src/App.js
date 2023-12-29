@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Signin />} />
-        <Route path="/profile/:userId" element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/transactions/:transactionId" element={<Transaction />} />
         <Route path="*" element={<Error />} />
       </Routes>

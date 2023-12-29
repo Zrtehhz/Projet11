@@ -41,7 +41,7 @@ function LoginPage() {
         setTimeout(() => sessionStorage.removeItem('sessionToken'), 1800000); // 30 minutes
       }
 
-      navigate(`/profile/${data.body.id}`);
+      navigate(`/profile`);
     } catch (error) {
       console.error('Error during login:', error);
     }

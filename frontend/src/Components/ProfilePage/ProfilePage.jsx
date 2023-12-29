@@ -23,7 +23,7 @@ function ProfilePage() {
         sessionStorage.removeItem('sessionToken');
         dispatch(logout());
         navigate('/login');
-      }, 1800); // 1800000 ms 30 minutes
+      }, 1800000); // 1800000 ms 30 minutes
 
       return () => clearTimeout(timer);
     }
@@ -57,8 +57,8 @@ function ProfilePage() {
           email: data.body.email,
           userName: data.body.userName
         });
-        navigate(`/profile/${data.body.id}`); // Redirige après la connexion réussie
-      } else {
+/*         navigate(`/profile/${data.body.id}`); // Redirige après la connexion réussie
+ */      } else {
         throw new Error(`Erreur avec le statut: ${data.status}`);
       }
     } catch (error) {
