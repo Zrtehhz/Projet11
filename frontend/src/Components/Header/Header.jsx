@@ -16,16 +16,21 @@ export default function Header({ userName, userId }) {
     const localStorageToken = localStorage.getItem('token');
     const sessionStorageToken = sessionStorage.getItem('sessionToken');
 
-    // Si un token est trouvé dans localStorage, rester connecté
     if (localStorageToken) {
       dispatch(setCredentials({ user: {}, token: localStorageToken, rememberMe: true }));
-    } 
-    // Si un token est trouvé dans sessionStorage mais pas dans localStorage, déconnecter
-    else if (sessionStorageToken) {
+    } else if (sessionStorageToken) {
+      dispatch(setCredentials({ user: {}, token: sessionStorageToken, rememberMe: false }));
+    } else {
       navigate('/login');
-      dispatch(logout());
     }
   }, [dispatch, navigate]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('sessionToken');
+    dispatch(logout());
+    navigate('/login');
+  };
 
   const handleLogoClick = () => {
     if (userId) {
@@ -33,12 +38,7 @@ export default function Header({ userName, userId }) {
     }
   };
 
-const handleSignOut = () => {
-    localStorage.removeItem('token');
-    sessionStorage.removeItem('sessionToken');
-    dispatch(logout());
-    navigate('/login');
-  };
+
 
   return (
     <header>

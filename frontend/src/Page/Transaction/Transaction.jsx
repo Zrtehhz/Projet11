@@ -48,6 +48,7 @@ function Transaction() {
         }
     }, [dispatch, navigate]);
 
+    
     return (
         <div>
             <Header onSignOut={handleSignOut} userName={profileData.userName}/>

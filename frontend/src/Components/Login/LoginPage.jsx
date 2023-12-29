@@ -18,40 +18,34 @@ function LoginPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
-      const response = await fetch('http://localhost:3001/api/v1/user/login', {
+      const response = await fetch(`http://localhost:3001/api/v1/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        const token = data.body.token;
-        const userData = { id: data.body.id, email: data.body.email, firstName: data.body.firstName };
-        dispatch(setCredentials({ user: userData, token, rememberMe }));
-
-        if (rememberMe) {
-          localStorage.setItem('token', token);
-          sessionStorage.removeItem('sessionToken'); // Supprimer le token de sessionStorage si "Remember Me" est coché
-        } else {
-          sessionStorage.setItem('sessionToken', token);
-          // Définir un timer pour la déconnexion automatique après 30 minutes
-          setTimeout(() => {
-            sessionStorage.removeItem('sessionToken');
-          }, 1800000); // 30 minutes en millisecondes
-        }
-
-        navigate(`/profile/${data.body.id}`);
-      } else {
-        console.log(data.message);
+      if (!response.ok) {
+        throw new Error(`Login failed: ${response.statusText}`);
       }
+
+      const data = await response.json();
+      const token = data.body.token;
+      const userData = { id: data.body.id, email: data.body.email, firstName: data.body.firstName };
+      dispatch(setCredentials({ user: userData, token, rememberMe }));
+
+      if (rememberMe) {
+        localStorage.setItem('token', token);
+      } else {
+        sessionStorage.setItem('sessionToken', token);
+        setTimeout(() => sessionStorage.removeItem('sessionToken'), 1800000); // 30 minutes
+      }
+
+      navigate(`/profile/${data.body.id}`);
     } catch (error) {
-      console.log('Une erreur s\'est produite lors de la connexion', error);
+      console.error('Error during login:', error);
     }
   };
-
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">

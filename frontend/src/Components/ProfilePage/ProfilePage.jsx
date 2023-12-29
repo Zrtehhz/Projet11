@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import {  useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../redux/reducers/authSlice';
 import EditButton from '../EditButton/EditButton';
@@ -9,7 +9,6 @@ import Header from '../../Components/Header/Header';
 function ProfilePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const reduxToken = useSelector(state => state.auth.token);
 
   const [profileData, setProfileData] = useState({ id: '', email: '', userName: '' });
 
@@ -17,9 +16,22 @@ function ProfilePage() {
     const localStorageToken = localStorage.getItem('token');
     const sessionStorageToken = sessionStorage.getItem('sessionToken');
     
-    if (localStorageToken || sessionStorageToken) {
-      fetchData(localStorageToken || sessionStorageToken);
-    } else {
+    if (sessionStorageToken) {
+      fetchData(sessionStorageToken);
+
+      const timer = setTimeout(() => {
+        sessionStorage.removeItem('sessionToken');
+        dispatch(logout());
+        navigate('/login');
+      }, 1800); // 1800000 ms 30 minutes
+
+      return () => clearTimeout(timer);
+    }
+    else if (localStorageToken) {
+      fetchData(localStorageToken);
+      
+    } 
+    else {
       navigate('/login');
     }
   }, [dispatch, navigate]);
@@ -62,6 +74,13 @@ function ProfilePage() {
     sessionStorage.removeItem('sessionToken');
   };
 
+  const handleProfileUpdate = (updatedData) => {
+    setProfileData(prevData => ({
+      ...prevData,
+      ...updatedData
+    }));
+  };
+
   return (
     <>
       <Header userName={profileData.userName} userId={profileData.id} />
@@ -69,7 +88,7 @@ function ProfilePage() {
         {profileData.id ? (
           <div className="header">
             <h1>Welcome back<br />{profileData.userName || profileData.id}!</h1>
-            <EditButton onProfileUpdate={setProfileData} />
+            <EditButton onProfileUpdate={handleProfileUpdate} />
           </div>
         ) : null}
         <h2 className="sr-only">Comptes</h2>
