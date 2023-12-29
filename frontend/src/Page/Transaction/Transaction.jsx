@@ -28,7 +28,13 @@ function Transaction() {
         }
 
         const transaction = transactions.find(t => t.id === newTransactionId);
-        setSelectedTransaction(transaction);
+        if (transaction) {
+            // Si la transaction existe alors il l'appel  
+            setSelectedTransaction(transaction);
+        } else { // sinon
+            // Si la transaction n'existe pas, ça redirige vers la page d'erreur
+            navigate('/error');
+        }
     }, [transactionId, selectedTransaction, transactions]);
 
     const handleSignOut = () => {

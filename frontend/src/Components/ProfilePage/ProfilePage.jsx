@@ -57,8 +57,7 @@ function ProfilePage() {
           email: data.body.email,
           userName: data.body.userName
         });
-/*         navigate(`/profile/${data.body.id}`); // Redirige après la connexion réussie
- */      } else {
+     } else {
         throw new Error(`Erreur avec le statut: ${data.status}`);
       }
     } catch (error) {

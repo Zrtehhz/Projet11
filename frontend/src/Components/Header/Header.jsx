@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation  } from "react-router-dom";
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, setCredentials } from '../../redux/reducers/authSlice';
 import logo from "../../Assets/Images/argentBankLogo.png";
@@ -11,6 +11,7 @@ export default function Header({ userName, userId }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     const localStorageToken = localStorage.getItem('token');
@@ -34,11 +35,25 @@ export default function Header({ userName, userId }) {
 
   const handleLogoClick = () => {
     if (userId) {
-      navigate(`/profile/${userId}`);
+      navigate(`/profile`);
     }
   };
 
+  const location = useLocation();
 
+  useEffect(() => {
+    let timer;
+
+    // Déclenche la déconnexion avec un délai de 3 secondes environ si l'URL affiche '/error'
+    if (location.pathname === '/error') {
+      timer = setTimeout(() => {
+        handleSignOut();
+      }, 3000);
+    }
+
+    // reset du timer
+    return () => clearTimeout(timer);
+  }, [location, handleSignOut]);
 
   return (
     <header>
@@ -52,7 +67,7 @@ export default function Header({ userName, userId }) {
             <>
               <FontAwesomeIcon icon={faUser} />
               {userName ? (
-                <Link className='main-nav-item' to={`/profile/${userId}`}>
+                <Link className='main-nav-item' to={`/profile`}>
                   {userName}
                 </Link>
               ) : (
