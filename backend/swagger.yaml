@@ -104,58 +104,61 @@ paths:
     put:
       tags:
         - Transaction Module
-      summary: Endpoint for editing a transaction
-      description: API endpoint for editing transaction data
+      summary: Edit note and category of a transaction
+      description: API endpoint for editing the note and category values in a transaction
       parameters:
         - in: path
           name: id
           description: ID of the transaction to be updated
           required: true
           type: string
+        - in: body
+          name: body
+          description: Data for updating the transaction, including category and note
+          required: true
+          schema:
+            $ref: "#/definitions/TransactionUpdate"
       responses:
         "200":
           description: Transaction successfully updated
           schema:
             $ref: "#/definitions/TransactionResponse"
         "404":
-          description: Not Found
-  /transactions:
-    get:
-      tags:
-        - Transaction Module
-      summary: Retrieve all transactions
-      description: API endpoint for fetching a list of all transactions
-      responses:
-        '200':
-          description: List of transactions successfully retrieved
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/TransactionResponse'
-        '500':
-          description: Internal Server Error
-  /transactions/{id}:
-    get:
-      tags:
-        - Transaction Module
-      summary: Retrieve a specific transaction
-      description: API endpoint for fetching details of a specific transaction by ID
-      parameters:
-        - in: path
-          name: id
-          description: ID of the transaction to retrieve
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Transaction details successfully retrieved
-          schema:
-            $ref: '#/definitions/TransactionResponse'
-        '404':
           description: Transaction not found
-        '500':
-          description: Internal Server Error
-
+  /transactions:
+      get:
+        tags:
+          - Transaction Module
+        summary: Retrieve all transactions
+        description: API endpoint for fetching a list of all transactions
+        responses:
+          '200':
+            description: List of transactions successfully retrieved
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/TransactionResponse'
+          '500':
+            description: Internal Server Error
+  /transactions/{Transactionid}:
+      get:
+        tags:
+          - Transaction Module
+        summary: Retrieve a specific transaction
+        description: API endpoint for fetching details of a specific transaction by ID
+        parameters:
+          - in: path
+            name: id
+            description: ID of the transaction to retrieve
+            required: true
+            type: string
+        responses:
+          '200':
+            description: Transaction details successfully retrieved
+          '404':
+            description: Transaction not found
+          '500':
+            description: Internal Server Error
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -234,26 +237,12 @@ definitions:
     properties:
       userName:
         type: string
-  Transaction:
+  TransactionUpdate:
+    type: object
     properties:
-      date:
-        type: integer
-        description: date
-      description:
-        type: string
-        description: description
-      amount:
-        type: string
-        description: amount
-      balance:
-        type: string
-        description: balance
-      transactionType:
-        type: string
-        description: transactionType
       category:
         type: string
-        description: category
+        description: New category of the transaction
       note:
         type: string
-        description: note
+        description: New note for the transaction

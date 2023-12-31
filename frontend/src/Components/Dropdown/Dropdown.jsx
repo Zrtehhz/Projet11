@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 function Dropdown({ detail }) {
     const [isOpen, setIsOpen] = useState(false);
+    
 
     // États locaux pour les champs de texte éditables
     const [category, setCategory] = useState(detail.category);
